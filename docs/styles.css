@@ -1,0 +1,13 @@
+body {
+  background-color: black;
+  color: #eee;
+  font-family: "Metropolis", "Courier New", Courier, monospace;
+  padding: 1rem 2rem;
+}
+
+.separator {
+  font-size: 12px;
+  color: #f74b00;
+  width: 100%;
+  text-align: center;
+}

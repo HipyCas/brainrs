@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brainrs</title>
+    <!-- <link rel="stylesheet" href="./font.css" /> -->
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <section id="header">
+      <h1>Brainrs - 🦀 Rust 🧠 Brainf**k interpreter</h1>
+      <p>
+        <code>brainrs</code> is a simple and blazing fast Brainf**k interpreter
+        written in pure Rust.
+      </p>
+    </section>
+    <div class="separator"></div>
+    <section id="features">
+      <h3>Features</h3>
+      <ul>
+        <li>⚛ Core commands + more commands</li>
+        <li>📦 Available as library for use inside Rust</li>
+        <li>⌨ Easy to use CLI</li>
+        <li>⚡ Extremely fas with millisecond times</li>
+      </ul>
+    </section>
+    <div class="separator"></div>
+    <section id="usage">
+      <h3>Features</h3>
+      <code>brainrs</code> reads the code from the standard input, meaning you
+      have to pipe in the file contents. The easiest way is to use the
+      <code><</code> character, like seen below:
+      <pre><code>brainrs < file.bf</code></pre>
+      Another option is putting <code>brainrs</code> on the recieving side of
+      the pipe, which may allow you to use another command to process the input
+      first, as seen below:
+      <pre>
+        <code>
+# Pass one-line script directly in the terminal echo
+"+++++>+>+<<[>[>>+<<-]>[>+<<+>-]>[<+>-]<<<-]++++[>>+++++ +++++ ++<<-]>>."
+| brainrs # Fetch a file from the internet and execute it curl
+https://location.online/of/file.fb | brainrs
+        </code>
+      </pre>
+    </section>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
