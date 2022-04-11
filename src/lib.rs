@@ -28,7 +28,6 @@
 //!
 //! <script>alert(document.cookie)</script>
 
-#![feature(unnamed_fields)]
 #![warn(missing_docs)]
 
 pub mod config;
