@@ -151,14 +151,16 @@ fn main() {
         }
     }
     */
-    let interpreter = Interpreter::with_tape(&input, #[cfg(feature = "toml-config")]
-    toml::from_str(
-        &std::fs::read_to_string(
-            std::env::current_dir().unwrap().join("brainrs.toml"),
+    let interpreter = Interpreter::with_tape(
+        &input,
+        #[cfg(feature = "toml-config")]
+        toml::from_str(
+            &std::fs::read_to_string(std::env::current_dir().unwrap().join("brainrs.toml"))
+                .unwrap_or(String::new()),
         )
-        .unwrap_or(String::new()),
-    )
-    .unwrap(), tape);
+        .unwrap(),
+        tape,
+    );
     // ! WEIRDLY NOT WORKING, WHAT THE F HELL HAPPENS??? interpreter.prompt_input();
     let res = match interpreter.exec_tape() {
         Ok(res) => format!("{}", res.0),
