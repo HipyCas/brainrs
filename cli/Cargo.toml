@@ -1,0 +1,22 @@
+[package]
+name = "brainrs-cli"
+version = "0.1.0"
+authors = ["Hipy Cas <hipycas@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+brainrs = { path = "../" }
+ascii = "1.0"
+human-panic = "1.0.3"
+pico-args = "0.4.2"
+serde = { version = "1", features = ["derive"], optional = true }
+toml = { version = "0.5", optional = true }                       # For loading configuration from file, but I think that's something to leave for Brained
+
+[features]
+toml-config = ["serde", "toml", "brainrs/derive"]
+
+[[bin]]
+name = "brainrs"
+path = "src/main.rs"

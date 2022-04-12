@@ -1,7 +1,9 @@
 use ascii::{AsciiChar, AsciiString};
 use human_panic::setup_panic;
+use pico_args::{Arguments, Error as ArgError};
 use std::io;
 use std::io::Read;
+use std::path::PathBuf;
 
 use brainrs::interpreter::Interpreter;
 
@@ -9,6 +11,8 @@ use brainrs::interpreter::Interpreter;
 // TODO Implement check to only save char if the number is below maximum allowed by ascii crate
 // TODO As you can find in the reference http://brainfuck.org/brainfuck.html (implement all mentioned), ! is used to separate code from input. The idea is that you could also add a second ! to give the interpreter a desired output, which it will test against, being like a testing framework. This ends like: <code>!<input>!<expected_output_for_testing>
 // TODO Make vector work with bigger numbers, not limited ti u8, but ensure that the number fits into a u8 before printing
+
+type FlagKey<'a> = [&'a str; 2];
 
 #[doc(hidden)]
 fn main() {
@@ -20,10 +24,49 @@ fn main() {
 
     setup_panic!();
 
+    let mut args = pico_args::Arguments::from_env();
+
+    let mut tape = vec![0];
+
+    match args.values_from_str::<FlagKey, PathBuf>(["-i", "--include"]) {
+        Ok(paths) => {
+            for path in paths {
+                tape = Interpreter::with_tape(
+                    &std::fs::read_to_string(path).unwrap(),
+                    #[cfg(feature = "toml-config")]
+                    toml::from_str(
+                        &std::fs::read_to_string(
+                            std::env::current_dir().unwrap().join("brainrs.toml"),
+                        )
+                        .unwrap_or(String::new()),
+                    )
+                    .unwrap(),
+                    tape,
+                )
+                .exec_tape()
+                .unwrap()
+                .1;
+            }
+        }
+        Err(e) => panic!("{}", e),
+    }
+
     let mut input = String::new();
-    io::stdin()
-        .read_to_string(&mut input)
-        .expect("Failed to read standard input");
+    match args.value_from_str::<FlagKey, PathBuf>(["-f", "--file"]) {
+        Ok(p) => input = std::fs::read_to_string(p).unwrap(),
+        Err(e) => match e {
+            ArgError::MissingOption(_) => {
+                io::stdin()
+                    .read_to_string(&mut input)
+                    .expect("Failed to read standard input");
+            }
+            ArgError::OptionWithoutAValue(_) => {
+                eprintln!("Missing value for -f/--file option");
+                std::process::exit(1);
+            }
+            _ => panic!("{:?}", e),
+        },
+    }
 
     /*
     let mut iter = 0;
@@ -108,17 +151,17 @@ fn main() {
         }
     }
     */
-    let interpreter = Interpreter::new(
-        &input,
-        toml::from_str(
-            &std::fs::read_to_string(std::env::current_dir().unwrap().join("brainrs.toml"))
-                .unwrap_or(String::new()),
+    let interpreter = Interpreter::with_tape(&input, #[cfg(feature = "toml-config")]
+    toml::from_str(
+        &std::fs::read_to_string(
+            std::env::current_dir().unwrap().join("brainrs.toml"),
         )
-        .unwrap(),
-    );
+        .unwrap_or(String::new()),
+    )
+    .unwrap(), tape);
     // ! WEIRDLY NOT WORKING, WHAT THE F HELL HAPPENS??? interpreter.prompt_input();
-    let res = match interpreter.exec() {
-        Ok(res) => res.to_string(),
+    let res = match interpreter.exec_tape() {
+        Ok(res) => format!("{}", res.0),
         Err(e) => format!("ERROR: {}", e),
     };
     println!("Output: {} {:?}", res, res.as_bytes());
